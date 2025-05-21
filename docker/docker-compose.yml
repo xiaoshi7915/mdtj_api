@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: mdtj_api
+    ports:
+      - "8701:8701"
+    depends_on:
+      - db
+    environment:
+      - FLASK_ENV=production
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME:-mt_zt}
+      - DB_USER=${DB_USER:-mt_zt}
+      - DB_PASSWORD=${DB_PASSWORD:-admin123456!}
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8701
+      - API_TOKEN=${API_TOKEN:-api_token_2025}
+      - TOKEN_LIFETIME=7776000
+      - DEBUG=False
+    volumes:
+      - ../logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8701/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: mysql:8.0
+    container_name: mdtj_mysql
+    ports:
+      - "13306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_password}
+      - MYSQL_DATABASE=${DB_NAME:-mt_zt}
+      - MYSQL_USER=${DB_USER:-mt_zt}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-admin123456!}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ../sql/sample_data.sql:/docker-entrypoint-initdb.d/02-sample_data.sql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER:-mt_zt}", "-p${DB_PASSWORD:-admin123456!}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mysql_data: 

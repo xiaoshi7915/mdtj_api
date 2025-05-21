@@ -1,0 +1,940 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "矛盾调解受理服务 API",
+    "description": "提供身份验证和矛盾调解受理单管理的RESTful API",
+    "version": "1.0.0"
+  },
+  "basePath": "/api",
+  "schemes": ["http"],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "健康检查",
+        "description": "检查API服务是否正常运行",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "服务正常运行",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "healthy"
+                },
+                "version": {
+                  "type": "string",
+                  "example": "1.0.0"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/identity/verify": {
+      "post": {
+        "summary": "身份验证",
+        "description": "通过身份证号验证用户是否存在",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "API令牌",
+            "required": true,
+            "type": "string",
+            "default": "api_token_2025"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "请求体",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id_card_number": {
+                  "type": "string",
+                  "example": "330102199001011234"
+                }
+              },
+              "required": ["id_card_number"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "验证成功或失败",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "message": {
+                  "type": "string",
+                  "example": "身份证号验证通过"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id_card_number": {
+                      "type": "string",
+                      "example": "330102199001011234"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "张三"
+                    },
+                    "contact_info": {
+                      "type": "string",
+                      "example": "13800138001"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "浙江省杭州市西湖区文三路123号"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "参数错误：缺少身份证号"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "未授权：API令牌无效或已过期"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/identity/status": {
+      "get": {
+        "summary": "查询验证状态",
+        "description": "查询身份证号对应的用户信息和验证状态",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "API令牌",
+            "required": true,
+            "type": "string",
+            "default": "api_token_2025"
+          },
+          {
+            "name": "id_card_number",
+            "in": "query",
+            "description": "身份证号",
+            "required": true,
+            "type": "string",
+            "example": "330102199001011234"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功或失败",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "message": {
+                  "type": "string",
+                  "example": "查询成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id_card_number": {
+                      "type": "string",
+                      "example": "330102199001011234"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "张三"
+                    },
+                    "contact_info": {
+                      "type": "string",
+                      "example": "13800138001"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "浙江省杭州市西湖区文三路123号"
+                    },
+                    "verified": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "verification_result": {
+                      "type": "string",
+                      "example": "验证通过"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "参数错误：缺少身份证号"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "未授权：API令牌无效或已过期"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appeals/summary": {
+      "get": {
+        "summary": "获取受理单摘要",
+        "description": "根据身份证号获取受理单摘要信息",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "API令牌",
+            "required": true,
+            "type": "string",
+            "default": "api_token_2025"
+          },
+          {
+            "name": "id_card_number",
+            "in": "query",
+            "description": "身份证号",
+            "required": true,
+            "type": "string",
+            "example": "330102199912212341"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功或失败",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "message": {
+                  "type": "string",
+                  "example": "查询成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "person_name": {
+                      "type": "string",
+                      "example": "陈忠"
+                    },
+                    "appeal_count": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "latest_appeal": {
+                      "type": "string",
+                      "example": "2024-02-12 12:32:23"
+                    },
+                    "handling_status_stats": {
+                      "type": "object",
+                      "example": {
+                        "办理中": 1
+                      }
+                    },
+                    "departments": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": ["矛盾调解中心"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "参数错误：缺少身份证号"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "未授权：API令牌无效或已过期"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appeals/search": {
+      "get": {
+        "summary": "通用查询受理单",
+        "description": "根据身份证号/受理单号/手机号查询历史受理单记录",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "API令牌",
+            "required": true,
+            "type": "string",
+            "default": "api_token_2025"
+          },
+          {
+            "name": "value",
+            "in": "query",
+            "description": "查询值",
+            "required": true,
+            "type": "string",
+            "example": "330102199912212341"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "查询类型(id_card_number/case_number/contact_info)",
+            "required": false,
+            "type": "string",
+            "example": "id_card_number"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "返回记录数量限制，默认20条",
+            "required": false,
+            "type": "integer",
+            "example": 20
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "起始偏移量，默认0",
+            "required": false,
+            "type": "integer",
+            "example": 0
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功或失败",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "message": {
+                  "type": "string",
+                  "example": "查询成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "case_number": {
+                            "type": "string",
+                            "example": "MTDJ-20250516-112318-288808"
+                          },
+                          "person_name": {
+                            "type": "string",
+                            "example": "陈忠"
+                          },
+                          "contact_info": {
+                            "type": "string",
+                            "example": "13787674567"
+                          },
+                          "gender": {
+                            "type": "string",
+                            "example": "男性"
+                          },
+                          "id_card_number": {
+                            "type": "string",
+                            "example": "330102199912212341"
+                          },
+                          "incident_time": {
+                            "type": "string",
+                            "example": "2025年12月2日"
+                          },
+                          "incident_location": {
+                            "type": "string",
+                            "example": "金色小区家园小区楼下"
+                          },
+                          "handling_department": {
+                            "type": "string",
+                            "example": "矛盾调解中心"
+                          },
+                          "handling_status": {
+                            "type": "string",
+                            "example": "办理中"
+                          },
+                          "create_time": {
+                            "type": "string",
+                            "example": "2024-02-12 12:32:23"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "参数错误：缺少查询值"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "未授权：API令牌无效或已过期"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appeals": {
+      "post": {
+        "summary": "添加受理单记录",
+        "description": "添加新的历史受理单记录",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "API令牌",
+            "required": true,
+            "type": "string",
+            "default": "api_token_2025"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "请求体",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "case_number": {
+                  "type": "string",
+                  "example": "MTDJ-20250520-112318-123456"
+                },
+                "person_name": {
+                  "type": "string",
+                  "example": "李明"
+                },
+                "contact_info": {
+                  "type": "string",
+                  "example": "13912345678"
+                },
+                "gender": {
+                  "type": "string",
+                  "example": "男性"
+                },
+                "id_card_number": {
+                  "type": "string",
+                  "example": "330102199001011234"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "浙江省杭州市余杭区XX路XX号"
+                },
+                "incident_time": {
+                  "type": "string",
+                  "example": "2025年5月15日"
+                },
+                "incident_location": {
+                  "type": "string",
+                  "example": "小区公共区域"
+                },
+                "incident_description": {
+                  "type": "string",
+                  "example": "噪音扰民，邻居家装修噪音大"
+                },
+                "people_involved": {
+                  "type": "string",
+                  "example": "3"
+                },
+                "submitted_materials": {
+                  "type": "string",
+                  "example": "照片、录音证据"
+                },
+                "handling_department": {
+                  "type": "string",
+                  "example": "矛盾调解中心"
+                },
+                "handling_status": {
+                  "type": "string",
+                  "example": "待处理"
+                },
+                "expected_completion": {
+                  "type": "string",
+                  "example": "3个工作日内"
+                },
+                "qr_code": {
+                  "type": "string",
+                  "example": "https://example.com/qr/MTDJ-20250520-112318-123456.png"
+                },
+                "markdown_doc": {
+                  "type": "string",
+                  "example": "# 受理单详情\n\n- **案件编号**: MTDJ-20250520-112318-123456\n- **申请人**: 李明\n- **事件**: 噪音扰民问题"
+                }
+              },
+              "required": ["case_number", "person_name", "id_card_number", "incident_description"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "添加成功或失败",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "message": {
+                  "type": "string",
+                  "example": "受理单记录添加成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "case_number": {
+                      "type": "string",
+                      "example": "MTDJ-20250520-112318-123456"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "参数错误：缺少必要字段"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "未授权：API令牌无效或已过期"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appeals/all": {
+      "get": {
+        "summary": "获取所有受理单记录",
+        "description": "获取系统中所有的受理单记录",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "API令牌",
+            "required": true,
+            "type": "string",
+            "default": "api_token_2025"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "返回记录数量限制，默认20条",
+            "required": false,
+            "type": "integer",
+            "example": 20
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "起始偏移量，默认0",
+            "required": false,
+            "type": "integer",
+            "example": 0
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功或失败",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "message": {
+                  "type": "string",
+                  "example": "查询成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "case_number": {
+                            "type": "string",
+                            "example": "MTDJ-20250516-112318-288808"
+                          },
+                          "person_name": {
+                            "type": "string",
+                            "example": "陈忠"
+                          },
+                          "contact_info": {
+                            "type": "string",
+                            "example": "13787674567"
+                          },
+                          "gender": {
+                            "type": "string",
+                            "example": "男性"
+                          },
+                          "id_card_number": {
+                            "type": "string",
+                            "example": "330102199912212341"
+                          },
+                          "handling_status": {
+                            "type": "string",
+                            "example": "办理中"
+                          },
+                          "create_time": {
+                            "type": "string",
+                            "example": "2024-02-12 12:32:23"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "未授权：API令牌无效或已过期"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/validate": {
+      "get": {
+        "summary": "验证API令牌",
+        "description": "验证提供的API令牌是否有效",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "API令牌",
+            "required": true,
+            "type": "string",
+            "example": "api_token_2025"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "验证成功或失败",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "message": {
+                  "type": "string",
+                  "example": "令牌有效"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "valid": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "example": 7776000
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "参数错误：缺少令牌"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "valid": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "获取所有用户",
+        "description": "获取系统中所有的用户信息",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "API令牌",
+            "required": true,
+            "type": "string",
+            "default": "api_token_2025"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功或失败",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "message": {
+                  "type": "string",
+                  "example": "查询成功"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "张三"
+                      },
+                      "contact_info": {
+                        "type": "string",
+                        "example": "13800138001"
+                      },
+                      "id_card_number": {
+                        "type": "string",
+                        "example": "330102199001011234"
+                      },
+                      "address": {
+                        "type": "string",
+                        "example": "浙江省杭州市西湖区文三路123号"
+                      },
+                      "verified": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "example": "2024-05-15 10:30:00"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "未授权：API令牌无效或已过期"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} 
