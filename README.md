@@ -89,7 +89,7 @@ mdtj_api/
 2. **克隆代码**
 
    ```bash
-   git clone <仓库地址> /opt/mdtj_api
+   git clone https://github.com/xiaoshi7915/mdtj_api.git
    cd /opt/mdtj_api
    ```
 
@@ -129,7 +129,7 @@ mdtj_api/
 2. **克隆代码**
 
    ```bash
-   git clone <仓库地址> /opt/mdtj_api
+   git clone https://github.com/xiaoshi7915/mdtj_api.git
    cd /opt/mdtj_api
    ```
 
@@ -181,13 +181,6 @@ LOG_LEVEL=INFO
 LOG_FILE=logs/app.log
 ```
 
-## API文档
-
-API文档使用Swagger生成，部署后可通过以下地址访问：
-
-```
-http://服务器IP:8701/api/docs/
-```
 
 ## 服务管理
 
@@ -200,25 +193,6 @@ http://服务器IP:8701/api/docs/
 
 # 停止服务
 pkill -f "gunicorn.*run:app"
-```
-
-## 开发环境与生产环境
-
-本系统支持开发环境和生产环境的配置：
-
-- **开发环境**: 启用调试模式，提供自动重载，方便开发和测试
-- **生产环境**: 禁用调试模式，优化性能，提高安全性
-
-可以通过.env文件中的FLASK_ENV变量切换环境：
-
-```
-# 开发环境
-FLASK_ENV=development
-DEBUG=True
-
-# 生产环境
-FLASK_ENV=production
-DEBUG=False
 ```
 
 ## 数据库初始化
@@ -250,8 +224,6 @@ python test_api.py
 # 运行特定测试
 python test_api.py --test=health,identity
 
-# 连接到远程服务器测试
-python test_api.py --host=47.118.250.53 --port=8701 --token=api_token_2025
 ```
 
 测试脚本会检查所有主要接口，并提供详细的测试结果和错误信息。
@@ -284,10 +256,3 @@ python test_api.py --host=47.118.250.53 --port=8701 --token=api_token_2025
 cd docker
 docker-compose restart api
 ```
-
-## 开发者注意事项
-
-1. 请遵循 PEP 8 代码风格规范
-2. 新增API接口时，请更新Swagger文档
-3. 提交代码前，请运行测试脚本验证功能
-4. 生产环境部署时，请确保禁用调试模式并加强安全配置 
